@@ -14,8 +14,9 @@ class Name(Field):
 
 
 class Phone(Field):
-    def valid(self) -> bool:
-        return len(str(self)) == 10 and str(self).isdigit()
+    @staticmethod
+    def valid(phone: str) -> bool:
+        return len(phone) == 10 and phone.isdigit()
 
 
 class Record:
@@ -24,10 +25,8 @@ class Record:
         self.phones = []
 
     def add_phone(self, phone: str) -> None:
-        new = Phone(phone)
-
-        if new.valid():
-            self.phones.append(new)
+        if Phone.valid(phone):
+            self.phones.append(Phone(phone))
 
     def remove_phone(self, phone: str) -> None:
         for id, current in enumerate(self.phones):
@@ -36,12 +35,10 @@ class Record:
                 break
 
     def edit_phone(self, current: str, new: str) -> None:
-        new: Phone = Phone(new)
-
-        if new.valid():
+        if Phone.valid(new):
             for id, phone in enumerate(self.phones):
                 if str(phone) == current:
-                    self.phones[id] = new
+                    self.phones[id] = Phone(new)
                     break
 
     def find_phone(self, phone: str) -> Phone:
