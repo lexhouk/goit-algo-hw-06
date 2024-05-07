@@ -1,9 +1,10 @@
 from collections import UserDict
+from dataclasses import dataclass
 
 
+@dataclass
 class Field:
-    def __init__(self, value) -> None:
-        self.value = value
+    value: str
 
     def __str__(self) -> str:
         return str(self.value)
@@ -20,45 +21,45 @@ class Phone(Field):
 
 
 class Record:
-    def __init__(self, name) -> None:
+    def __init__(self, name: str) -> None:
         self.name = Name(name)
-        self.phones = []
+        self.phones: list[Phone] = []
+
+    def __find(self,
+               phone: str,
+               get_instance: bool = False
+               ) -> int | Phone | None:
+        for id, instance in enumerate(self.phones):
+            if str(instance) == phone:
+                return instance if get_instance else id
+        return None
 
     def add_phone(self, phone: str) -> None:
         if Phone.valid(phone):
             self.phones.append(Phone(phone))
 
     def remove_phone(self, phone: str) -> None:
-        for id, current in enumerate(self.phones):
-            if str(current) == phone:
-                del self.phones[id]
-                break
+        if id := self.__find(phone):
+            del self.phones[id]
 
     def edit_phone(self, current: str, new: str) -> None:
-        if Phone.valid(new):
-            for id, phone in enumerate(self.phones):
-                if str(phone) == current:
-                    self.phones[id] = Phone(new)
-                    break
+        if Phone.valid(new) and (id := self.__find(current)):
+            self.phones[id] = Phone(new)
 
-    def find_phone(self, phone: str) -> Phone:
-        for current in self.phones:
-            if str(current) == phone:
-                return current
-
-        return Phone('')
+    def find_phone(self, phone: str) -> Phone | None:
+        return self.__find(phone, True)
 
     def __str__(self) -> str:
-        phones = '; '.join(str(phone) for phone in self.phones)
-        return f'Contact name: {str(self.name)}, phones: {phones}'
+        return f'Contact name: {str(self.name)}, ' \
+               f"phones: {'; '.join(map(str, self.phones))}"
 
 
 class AddressBook(UserDict):
     def add_record(self, record: Record) -> None:
         self.data[str(record.name)] = record
 
-    def find(self, name: str) -> Record:
-        return self.data.get(name, Record(''))
+    def find(self, name: str) -> Record | None:
+        return self.data.get(name)
 
     def delete(self, name: str) -> None:
         for id, record in self.data.items():
