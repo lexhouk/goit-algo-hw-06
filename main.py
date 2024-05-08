@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 @dataclass
 class Field:
-    value: str
+    _value: str
 
     def __str__(self) -> str:
-        return str(self.value)
+        return str(self._value)
 
 
 class Name(Field):
@@ -23,35 +23,35 @@ class Phone(Field):
 class Record:
     def __init__(self, name: str) -> None:
         self.name = Name(name)
-        self.phones: list[Phone] = []
+        self.__phones: list[Phone] = []
 
     def __find(self,
                phone: str,
                get_instance: bool = False
                ) -> int | Phone | None:
-        for id, instance in enumerate(self.phones):
+        for id, instance in enumerate(self.__phones):
             if str(instance) == phone:
                 return instance if get_instance else id
         return None
 
     def add_phone(self, phone: str) -> None:
         if Phone.valid(phone):
-            self.phones.append(Phone(phone))
+            self.__phones.append(Phone(phone))
 
     def remove_phone(self, phone: str) -> None:
         if id := self.__find(phone):
-            del self.phones[id]
+            del self.__phones[id]
 
     def edit_phone(self, current: str, new: str) -> None:
         if Phone.valid(new) and (id := self.__find(current)):
-            self.phones[id] = Phone(new)
+            self.__phones[id]._value = new
 
     def find_phone(self, phone: str) -> Phone | None:
         return self.__find(phone, True)
 
     def __str__(self) -> str:
         return f'Contact name: {str(self.name)}, ' \
-               f"phones: {'; '.join(map(str, self.phones))}"
+               f"phones: {'; '.join(map(str, self.__phones))}"
 
 
 class AddressBook(UserDict):
