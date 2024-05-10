@@ -54,8 +54,8 @@ class Record:
         return self.__find(phone, True)
 
     def __str__(self) -> str:
-        return f'Contact name: {self.name.value}, ' \
-               f"phones: {'; '.join(map(str, self.phones))}"
+        phones = '; '.join(map(lambda phone: phone.value, self.phones))
+        return f'Contact name: {self.name.value}, phones: {phones}'
 
 
 class AddressBook(UserDict):
