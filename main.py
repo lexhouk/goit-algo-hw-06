@@ -39,13 +39,11 @@ class Record:
         self.phones.append(Phone(phone))
 
     def remove_phone(self, phone: str) -> None:
-        if id := self.__find(phone):
+        if (id := self.__find(phone)) is not None:
             del self.phones[id]
 
     def edit_phone(self, current: str, new: str) -> None:
-        id = self.__find(current)
-
-        if id is None:
+        if (id := self.__find(current)) is None:
             raise ValueError(f'Phone {current} not found!')
         else:
             self.phones[id] = Phone(new)
